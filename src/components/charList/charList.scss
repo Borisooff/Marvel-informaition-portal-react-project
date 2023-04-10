@@ -27,6 +27,9 @@
             height: 200px;
             object-fit: cover;
             transform: translate(-15px, -15px);
+            &.noneimg{
+                object-fit: contain;
+            }
         }
         &_selected {
             box-shadow: 0 5px 20px $main-color;

@@ -8,11 +8,6 @@ import './randomChar.scss';
 
 class RandomChar extends Component {
 
-    constructor(props) {
-        super(props);
-        this.updateChar();
-    }
-
     state = {
         char: {},
         loading: true,
@@ -20,19 +15,22 @@ class RandomChar extends Component {
 
     marvelService = new MarvelService();
 
+    componentDidMount() {
+        this.updateChar();
+    }
+
     onCharLoaded = (char) => {
-        this.setState({ 
-            char: char, 
-            loading: false, 
-            error: false, 
+        this.setState({
+            char: char,
+            loading: false,
+            error: false,
         });
-        
     }
 
     onError = () => {
-        this.setState({ 
-            loading: false, 
-            error: true, 
+        this.setState({
+            loading: false,
+            error: true,
         });
     }
 
@@ -45,11 +43,19 @@ class RandomChar extends Component {
         )
     }
 
+    onTryIt = () => {
+        this.setState({
+            char: {},
+            loading: true,
+        })
+        this.updateChar()
+    }
+
     render() {
         const { char, loading, error } = this.state;
         const errorMessage = error ? <ErrorMessage /> : null;
         const spinner = loading ? <Spiner /> : null;
-        const content = !(error || spinner) ?  <View  char ={char}/> : null
+        const content = !(error || spinner) ? <View char={char} /> : null
 
         return (
             <div className="randomchar">
@@ -64,7 +70,7 @@ class RandomChar extends Component {
                     <p className="randomchar__title">
                         Or choose another one
                     </p>
-                    <button className="button button__main">
+                    <button onClick={this.onTryIt} className="button button__main">
                         <div className="inner">try it</div>
                     </button>
                     <img src={mjolnir} alt="mjolnir" className="randomchar__decoration" />
@@ -75,10 +81,15 @@ class RandomChar extends Component {
 }
 
 const View = ({ char }) => {
-    const {name, description, thumbnail, homepage, wiki} = char;
+    const { name, description, thumbnail, homepage, wiki } = char;
+    let clazz = 'randomchar__img';
+    if (thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
+        clazz = clazz + ' noneimg';
+    }
+
     return (
         <div className="randomchar__block">
-            <img src={thumbnail} alt="Random character" className="randomchar__img" />
+            <img src={thumbnail} alt="Random character" className={clazz} />
             <div className="randomchar__info">
                 <p className="randomchar__name">{name}</p>
                 <p className="randomchar__descr">
@@ -96,5 +107,7 @@ const View = ({ char }) => {
         </div>
     )
 }
+
+
 
 export default RandomChar;
