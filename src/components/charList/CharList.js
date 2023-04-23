@@ -14,10 +14,10 @@ const CharList = (props) => {
     const [offset, setOffset] = useState(210);
     const [charEnded, setCharEnded] = useState(false);
 
-
     const marvelService = new MarvelService();
 
     useEffect(() => {
+        console.log('load')
         onRequest();
     }, []);
 
@@ -28,15 +28,6 @@ const CharList = (props) => {
             .catch(onError)
     }
 
-    const onError = () => {
-        setLoading(false);
-        setError(true);
-    }
-
-    const onCharListLoading = () => {
-        setNewItemLoading(true);
-    }
-
     const onCharListLoaded = (newCharList) => {
         let ended = false;
         if (newCharList.length < 9) {
@@ -44,11 +35,21 @@ const CharList = (props) => {
         }
 
         setCharList(charList => [...charList, ...newCharList]);
+
         setLoading(false);
         setError(false);
         setNewItemLoading(false);
         setOffset(offset => offset + 9);
         setCharEnded(ended);
+    }
+
+    const onError = () => {
+        setLoading(false);
+        setError(true);
+    }
+
+    const onCharListLoading = () => {
+        setNewItemLoading(true);
     }
 
     const itemRefs = useRef([]);

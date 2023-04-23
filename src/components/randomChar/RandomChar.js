@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import MarvelService from '../../services/MarvelService';
 import Spiner from '../spiner/spiner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -6,78 +6,70 @@ import ErrorMessage from '../errorMessage/ErrorMessage';
 import mjolnir from '../../resources/img/mjolnir.png';
 import './randomChar.scss';
 
-class RandomChar extends Component {
+const RandomChar = () => {
 
-    state = {
-        char: {},
-        loading: true,
+    const [char, setChar] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
+
+    const marvelService = new MarvelService();
+
+    useEffect(() => {
+        updateChar();
+    }, []);
+
+    const onCharLoaded = (char) => {
+        setChar(char);
+        setLoading(false);
+        setError(false);
     }
 
-    marvelService = new MarvelService();
-
-    componentDidMount() {
-        this.updateChar();
+    const onError = () => {
+        setLoading(false);
+        setError(true);
     }
 
-    onCharLoaded = (char) => {
-        this.setState({
-            char: char,
-            loading: false,
-            error: false,
-        });
-    }
-
-    onError = () => {
-        this.setState({
-            loading: false,
-            error: true,
-        });
-    }
-
-    updateChar = () => {
+    const updateChar = () => {
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
-        this.marvelService.getCharacter(id).then(res => {
-            this.onCharLoaded(res);
-        }).catch(
-            this.onError
-        )
+        marvelService.getCharacter(id)
+            .then(res => {
+                onCharLoaded(res);
+            })
+            .catch(
+                onError
+            )
     }
 
-    onTryIt = () => {
-        this.setState({
-            char: {},
-            loading: true,
-        })
-        this.updateChar()
+    const onTryIt = () => {
+        setChar({});
+        setLoading(true);
+        updateChar();
     }
 
-    render() {
-        const { char, loading, error } = this.state;
-        const errorMessage = error ? <ErrorMessage /> : null;
-        const spinner = loading ? <Spiner /> : null;
-        const content = !(error || spinner) ? <View char={char} /> : null
+    const errorMessage = error ? <ErrorMessage /> : null;
+    const spinner = loading ? <Spiner /> : null;
+    const content = !(error || spinner) ? <View char={char} /> : null
 
-        return (
-            <div className="randomchar">
-                {errorMessage}
-                {spinner}
-                {content}
-                <div className="randomchar__static">
-                    <p className="randomchar__title">
-                        Random character for today!<br />
-                        Do you want to get to know him better?
-                    </p>
-                    <p className="randomchar__title">
-                        Or choose another one
-                    </p>
-                    <button onClick={this.onTryIt} className="button button__main">
-                        <div className="inner">try it</div>
-                    </button>
-                    <img src={mjolnir} alt="mjolnir" className="randomchar__decoration" />
-                </div>
+    return (
+        <div className="randomchar">
+            {errorMessage}
+            {spinner}
+            {content}
+            <div className="randomchar__static">
+                <p className="randomchar__title">
+                    Random character for today!<br />
+                    Do you want to get to know him better?
+                </p>
+                <p className="randomchar__title">
+                    Or choose another one
+                </p>
+                <button onClick={onTryIt} className="button button__main">
+                    <div className="inner">try it</div>
+                </button>
+                <img src={mjolnir} alt="mjolnir" className="randomchar__decoration" />
             </div>
-        )
-    }
+        </div>
+    )
 }
 
 const View = ({ char }) => {
@@ -107,7 +99,5 @@ const View = ({ char }) => {
         </div>
     )
 }
-
-
 
 export default RandomChar;
