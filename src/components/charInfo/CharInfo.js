@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import MarvelService from '../../services/MarvelService';
+import useMarvelService from '../../services/MarvelService';
 import Spiner from '../spiner/spiner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import Skeleton from '../skeleton/Skeleton';
@@ -10,62 +10,15 @@ import './charInfo.scss';
 const CharInfo = (props) => {
 
     const [char, setChar] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(false);
-
-    const marvelService = new MarvelService();
-
-    // state = {
-    //     char: null,
-    //     loading: false,
-    //     error: false,
-    // }
+    const {loading, error, getCharacter, clearError} = useMarvelService();
 
     useEffect(() => {
         updateChar();
     }, [props.selectedCharId])
 
-    // componentDidMount() {
-    //     this.updateChar()
-    // }
-
-    // useEffect((prevProps) => {
-    //     if (props.selectedCharId !== prevProps.selectedCharId) {
-    //         updateChar()
-    //     }
-    // }, [char])
-
-    // componentDidUpdate(prevProps) {
-    //     if (this.props.selectedCharId !== prevProps.selectedCharId) {
-    //         this.updateChar()
-    //     }
-    // }
-
-    const onLoading = () => {
-        setLoading(true);
-    }
 
     const onCharLoaded = (char) => {
-
         setChar(char);
-        setLoading(false);
-        setError(false);
-
-        // this.setState({
-        //     char: char,
-        //     loading: false,
-        //     error: false,
-        // })
-    }
-
-    const onError = () => {
-        setError(true);
-        setLoading(false);
-
-        // this.setState({
-        //     error: true,
-        //     loading: false,
-        // })
     }
 
     const updateChar = () => {
@@ -73,12 +26,11 @@ const CharInfo = (props) => {
         if (!selectedCharId) {
             return;
         }
+        
+        clearError();
 
-        onLoading();
-
-        marvelService.getCharacter(selectedCharId)
+       getCharacter(selectedCharId)
             .then(onCharLoaded)
-            .catch(onError)
     }
 
     const skeleton = error || loading || char ? null : <Skeleton />;
@@ -94,7 +46,6 @@ const CharInfo = (props) => {
             {content}
         </div>
     )
-
 }
 
 const View = ({ char }) => {
