@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import {Link} from 'react-router-dom'
+
 import useMarvelService from '../../services/MarvelService';
 import Spiner from '../spiner/spiner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -37,29 +39,20 @@ const ComicsList = () => {
         setComicsEnded(ended);
     }
 
-    const comicsRefs = useRef([]);
-
-    const focusOnComics = (i) => {
-        comicsRefs.current[i].focus();
-    }
 
     function renderComicsList(comicsList) {
         const items = comicsList.map((item, index) => {
 
             return (
                 <li className="comics__item"
-                    onClick={() => focusOnComics(index)}
-                    key={item.id}
-                    ref={el => comicsRefs.current[index] = el}>
-
-                    <a href="#"
-                    >
+                    key={index}>
+                    <Link to={`/comics/${item.id}`}>
                         <img src={item.thumbnail}
                             alt={item.title}
                             className="comics__item-img" />
                         <div className="comics__item-name">{item.title}</div>
                         <div className="comics__item-price">{item.price}$</div>
-                    </a>
+                    </Link>
                 </li>
             )
         });
