@@ -1,24 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+
 import useMarvelService from '../../services/MarvelService';
-import Spiner from '../spiner/spiner';
-import ErrorMessage from '../errorMessage/ErrorMessage';
+import setContentList from '../../utils/setContentList';
 
 import './charList.scss';
-
-const setContent = (process, Component, newItemLoading) => {
-    switch (process) {
-        case 'waiting':
-            return <Spiner />;
-        case 'loading':
-            return newItemLoading ? <Component /> : <Spiner />;
-        case 'confirmed':
-            return <Component />
-        case 'error':
-            return <ErrorMessage />
-        default:
-            throw new Error('Unexpected process state');
-    }
-}
 
 const CharList = (props) => {
 
@@ -94,9 +79,13 @@ const CharList = (props) => {
         )
     }
 
+    const elements = useMemo(()=>{
+        return setContentList(process, () => renderItems(charList), newItemLoading)
+    }, [process]);
+
     return (
         <div className="char__list">
-            {setContent(process, () => renderItems(charList), newItemLoading)}
+            {elements}
             <button
                 disabled={newItemLoading}
                 style={{ 'display': charEnded ? 'none' : 'block' }}

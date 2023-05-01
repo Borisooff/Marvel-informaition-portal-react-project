@@ -1,26 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'
 
 import useMarvelService from '../../services/MarvelService';
-import Spiner from '../spiner/spiner';
-import ErrorMessage from '../errorMessage/ErrorMessage';
+import setContentList from '../../utils/setContentList';
 
 import './comicsList.scss';
-
-const setContent = (process, Component, newItemLoading) => {
-    switch (process) {
-        case 'waiting':
-            return <Spiner />;
-        case 'loading':
-            return newItemLoading ? <Component /> : <Spiner />;
-        case 'confirmed':
-            return <Component />
-        case 'error':
-            return <ErrorMessage />
-        default:
-            throw new Error('Unexpected process state');
-    }
-}
 
 const ComicsList = () => {
 
@@ -55,7 +39,6 @@ const ComicsList = () => {
         setComicsEnded(ended);
     }
 
-
     function renderComicsList(comicsList) {
         const items = comicsList.map((item, index) => {
 
@@ -81,7 +64,7 @@ const ComicsList = () => {
 
     return (
         <div className="comics__list">
-            {setContent(process, () => renderComicsList(comicsList), newItemsLoading)}
+            {setContentList(process, () => renderComicsList(comicsList), newItemsLoading)}
             <button className="button button__main button__long"
                 onClick={() => onRequest(offset)}
                 style={{ 'display': comicsEnded ? 'none' : 'block' }}
