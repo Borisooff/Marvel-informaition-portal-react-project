@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
+import { Helmet } from "react-helmet";
 
 import useMarvelService from '../../../services/MarvelService';
 import Spiner from '../../spiner/spiner';
@@ -10,7 +11,7 @@ import './singleCharPage.scss';
 
 const SingleCharPage = () => {
     const { charId } = useParams();
-    const [ char, setComic ] = useState(null);
+    const [char, setComic] = useState(null);
 
     const { loading, error, getCharacter, clearError } = useMarvelService();
 
@@ -43,13 +44,20 @@ const SingleCharPage = () => {
 }
 
 const View = ({ char }) => {
-    const { title, description, thumbnail } = char;
+    const { name, description, thumbnail } = char;
 
     return (
         <div className="single-char">
-            <img src={thumbnail} alt={title} className="single-char__img" />
+            <Helmet>
+                <meta
+                    name="description"
+                    content={`${name} character description`}
+                />
+                <title>{name}</title>
+            </Helmet>
+            <img src={thumbnail} alt={name} className="single-char__img" />
             <div className="single-char__info">
-                <h2 className="single-char__name">{title}</h2>
+                <h2 className="single-char__name">{name}</h2>
                 <p className="single-char__descr">{description}</p>
             </div>
             <Link to='/' className="single-char__back">Back to main</Link>

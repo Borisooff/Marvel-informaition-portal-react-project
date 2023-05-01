@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
+import { Helmet } from "react-helmet";
 
 import useMarvelService from '../../../services/MarvelService';
 import Spiner from '../../spiner/spiner';
@@ -10,7 +11,7 @@ import './singleComicPage.scss';
 
 const SingleComicPage = () => {
     const { comicId } = useParams();
-    const [ comic, setComic ] = useState(null);
+    const [comic, setComic] = useState(null);
 
     const { loading, error, getComic, clearError } = useMarvelService();
 
@@ -47,6 +48,13 @@ const View = ({ comic }) => {
 
     return (
         <div className="single-comic">
+            <Helmet>
+                <meta
+                    name="description"
+                    content={`${title} comics book`}
+                />
+                <title>{title}</title>
+            </Helmet>
             <img src={thumbnail} alt={title} className="single-comic__img" />
             <div className="single-comic__info">
                 <h2 className="single-comic__name">{title}</h2>
