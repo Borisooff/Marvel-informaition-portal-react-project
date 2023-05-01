@@ -3,8 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Helmet } from "react-helmet";
 
 import useMarvelService from '../../../services/MarvelService';
-import Spiner from '../../spiner/spiner';
-import ErrorMessage from '../../errorMessage/ErrorMessage';
+import setContent from '../../../utils/setContent';
 import AppBanner from '../../appBanner/AppBanner';
 
 import './singleComicPage.scss';
@@ -13,7 +12,7 @@ const SingleComicPage = () => {
     const { comicId } = useParams();
     const [comic, setComic] = useState(null);
 
-    const { loading, error, getComic, clearError } = useMarvelService();
+    const { process, setProcess, getComic, clearError } = useMarvelService();
 
     useEffect(() => {
         updateComic();
@@ -27,24 +26,19 @@ const SingleComicPage = () => {
         clearError();
         getComic(comicId)
             .then(onComicLoaded)
+            .then(() => setProcess('confirmed'))
     }
-
-    const errorMessage = error ? <ErrorMessage /> : null;
-    const spinner = loading ? <Spiner /> : null;
-    const content = !(loading || spinner || !comic) ? <View comic={comic} /> : null;
 
     return (
         <>
             <AppBanner />
-            {errorMessage}
-            {spinner}
-            {content}
+            {setContent(process, View, comic)}
         </>
     );
 }
 
-const View = ({ comic }) => {
-    const { title, description, pageCount, thumbnail, language, price } = comic;
+const View = ({ data }) => {
+    const { title, description, pageCount, thumbnail, language, price } = data;
 
     return (
         <div className="single-comic">

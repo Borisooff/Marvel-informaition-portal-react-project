@@ -1,11 +1,26 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import useMarvelService from '../../services/MarvelService';
 import Spiner from '../spiner/spiner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 
 import './comicsList.scss';
+
+const setContent = (process, Component, newItemLoading) => {
+    switch (process) {
+        case 'waiting':
+            return <Spiner />;
+        case 'loading':
+            return newItemLoading ? <Component /> : <Spiner />;
+        case 'confirmed':
+            return <Component />
+        case 'error':
+            return <ErrorMessage />
+        default:
+            throw new Error('Unexpected process state');
+    }
+}
 
 const ComicsList = () => {
 
@@ -14,7 +29,7 @@ const ComicsList = () => {
     const [offset, setOffset] = useState(210);
     const [comicsEnded, setComicsEnded] = useState(false);
 
-    const { loading, error, getAllComicses } = useMarvelService();
+    const { process, setProcess, getAllComicses } = useMarvelService();
 
     useEffect(() => {
         onRequest(offset, true);
@@ -24,6 +39,7 @@ const ComicsList = () => {
         initial ? setNewItemsLoading(false) : setNewItemsLoading(true);
         getAllComicses(offset)
             .then(onComicsListLoaded)
+            .then(() => setProcess('confirmed'))
     }
 
     const onComicsListLoaded = (newComicsList) => {
@@ -63,15 +79,9 @@ const ComicsList = () => {
         )
     }
 
-    const comicses = renderComicsList(comicsList);
-    const errorMessage = error ? <ErrorMessage /> : null;
-    const spinner = loading && !newItemsLoading ? <Spiner /> : null;
-
     return (
         <div className="comics__list">
-            {comicses}
-            {spinner}
-            {errorMessage}
+            {setContent(process, () => renderComicsList(comicsList), newItemsLoading)}
             <button className="button button__main button__long"
                 onClick={() => onRequest(offset)}
                 style={{ 'display': comicsEnded ? 'none' : 'block' }}
